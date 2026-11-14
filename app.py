@@ -155,7 +155,7 @@ class App:
                     vault.lock()
                 else:
                     messagebox.showwarning("Trezor sa nepodarilo vymazať",
-                                           f"{msg}\n\nZavri súbory a okná z trezoru a vymaž priečinok trezor ručne",
+                                           f"{msg}\n\nZavri súbory a okná z trezoru",
                                            parent=self.root)
             self.set_status("Profil bol úspešne vytvorený")
             messagebox.showinfo("Info","Profil bol vytvorený", parent=self.root)

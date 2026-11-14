@@ -1,0 +1,5 @@
+-c constraints.txt
+deepface
+tf-keras
+mediapipe
+opencv-contrib-python

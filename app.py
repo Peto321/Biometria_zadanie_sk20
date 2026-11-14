@@ -95,7 +95,7 @@ class App:
         text = {
             "locked": "Trezor zamknutý",
             "unlocked": "Trezor Odomknutý",
-            "missing": "Trezor nebol vytvorený",
+            "missing": "Trezor sa vytvorí prihlásením",
         }[vault.status()]
         self.vault_state_var.set(text)
 

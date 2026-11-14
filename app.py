@@ -160,7 +160,7 @@ class App:
                     os.remove(FACE_PATH)
             self.set_busy(False)
 
-    # ---------- odomknutie ----------
+    
     def unlock(self):
         if not profile_exists():
             messagebox.showwarning("Chýba profil", "Najprv pridaj profil", parent=self.root)
@@ -182,27 +182,27 @@ class App:
             ok = access_control.verify_identity(tester=tester)
             self.set_step(0, "ok" if ok else "fail")
             if not ok:
-                self.set_status("Prístup zamietnutý: tvár nezodpovedá profilu")
+                self.set_status("tvár nezodpovedá profilu")
                 return
 
-            # Krok 2: liveness
+            
             self.set_step(1, "run")
             self.set_status("Krok 2: splň výzvu v okne kamery")
             import liveness
             ok = liveness.run_liveness_check()
             self.set_step(1, "ok" if ok else "fail")
             if not ok:
-                self.set_status("Prístup zamietnutý: liveness test zlyhal")
+                self.set_status("liveness test zlyhal")
                 return
 
-            # Krok 3: heslo + rytmus pisania
+            
             self.set_step(2, "run")
             self.set_status("Krok 3: napíš heslo")
             import keystroke
             ok = keystroke.verify_keystroke(tester=tester, master=self.root)
             self.set_step(2, "ok" if ok else "fail")
             if not ok:
-                self.set_status("Prístup zamietnutý: heslo alebo rytmus písania nesedí")
+                self.set_status("heslo alebo rytmus písania nesedí")
                 return
 
             ok, msg = vault.unlock()

@@ -7,6 +7,8 @@ import io
 import os
 import subprocess
 import sys
+import shutil
+import stat
 
 VAULT_DIR = "trezor"
 IS_WINDOWS = os.name == "nt"
@@ -94,6 +96,26 @@ def unlock():
     except Exception as e:
         return False, f"Odomknutie zlyhalo: {e}"
 
+def _force_remove(func, path, _exc):
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+def reset():
+    try:
+        if IS_WINDOWS:
+            ok, msg = unlock()
+            if not ok:
+                return False, msg
+        path = vault_path()
+        if os.path.isdir(path):
+            if sys.version_info >= (3, 12):
+                shutil.rmtree(path, onexc=_force_remove)
+            else:
+                shutil.rmtree(path, onerror=_force_remove)
+        ensure_vault()
+        return True, "Trezor bol vymazany a vytvoreny nanovo"
+    except Exception as e:
+        return False, f"Vymazanie trezoru zlyhalo: {e}"
 
 def open_vault():
     """Otvori trezor v Prieskumniku"""

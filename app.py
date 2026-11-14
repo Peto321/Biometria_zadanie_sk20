@@ -95,13 +95,13 @@ class App:
         text = {
             "locked": "Trezor zamknutý",
             "unlocked": "Trezor Odomknutý",
-            "missing": "Trezor sa vytvorí prihlásením",
+            "missing": "Trezor nebol vytvorený",
         }[vault.status()]
         self.vault_state_var.set(text)
 
     def lock_vault(self):
         if not profile_exists():
-            messagebox.showwarning("Chýba profil",
+            messagebox.showwarning("Chýba profil","Pridaj profil",
                                    parent=self.root)
             return
         ok, msg = vault.lock()
@@ -119,6 +119,7 @@ class App:
 
     
     def add_profile(self):
+        had_profile = profile_exists()
         if profile_exists():
             if not messagebox.askyesno("Profil už existuje",
                                        "Profil už existuje. Chceš ho prepísať novým?",
@@ -147,6 +148,15 @@ class App:
                 return
 
             success = True
+            if had_profile:
+                self.set_status("Mažem starý obsah trezoru")
+                ok, msg = vault.reset()
+                if ok:
+                    vault.lock()
+                else:
+                    messagebox.showwarning("Trezor sa nepodarilo vymazať",
+                                           f"{msg}\n\nZavri súbory a okná z trezoru a vymaž priečinok trezor ručne",
+                                           parent=self.root)
             self.set_status("Profil bol úspešne vytvorený")
             messagebox.showinfo("Info","Profil bol vytvorený", parent=self.root)
         except Exception as e:
@@ -159,6 +169,7 @@ class App:
                 elif os.path.exists(FACE_PATH):
                     os.remove(FACE_PATH)
             self.set_busy(False)
+            self.refresh_vault_state()
 
     
     def unlock(self):
@@ -175,7 +186,7 @@ class App:
         self.reset_steps()
         self.set_busy(True)
         try:
-            # Krok 1: tvar
+            
             self.set_step(0, "run")
             self.set_status("Krok 1: pozri sa do kamery")
             import access_control
